@@ -80,18 +80,19 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                 return cause;
             }
             if (tjp != null) {
-                if (tjp.getThrottleOption().equals("project")) {
-                    if (tjp.getMaxConcurrentPerNode() > 0) {
-                        int maxConcurrentPerNode = tjp.getMaxConcurrentPerNode();
-                        int runCount = buildsOfProjectOnNode(node, task);
+                // Always check per project settings
+                if (tjp.getMaxConcurrentPerNode() > 0) {
+                    int maxConcurrentPerNode = tjp.getMaxConcurrentPerNode();
+                    int runCount = buildsOfProjectOnNode(node, task);
 
-                        // This would mean that there are as many or more builds currently running than are allowed.
-                        if (runCount >= maxConcurrentPerNode) {
-                            return CauseOfBlockage.fromMessage(
-                                    Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount));
-                        }
+                    // This would mean that there are as many or more builds currently running than are allowed.
+                    if (runCount >= maxConcurrentPerNode) {
+                        return CauseOfBlockage.fromMessage(
+                                Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount));
                     }
-                } else if (tjp.getThrottleOption().equals("category")) {
+                }
+
+                if (tjp.getThrottleOption().equals("category")) {
                     return throttleCheckForCategoriesOnNode(node, jenkins, tjp.getCategories());
                 }
             } else if (!pipelineCategories.isEmpty()) {
@@ -237,17 +238,18 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
             return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_BuildPending());
         }
         if (tjp != null) {
-            if (tjp.getThrottleOption().equals("project")) {
-                if (tjp.getMaxConcurrentTotal() > 0) {
-                    int maxConcurrentTotal = tjp.getMaxConcurrentTotal();
-                    int totalRunCount = buildsOfProjectOnAllNodes(task);
+            // Always check per project settings
+            if (tjp.getMaxConcurrentTotal() > 0) {
+                int maxConcurrentTotal = tjp.getMaxConcurrentTotal();
+                int totalRunCount = buildsOfProjectOnAllNodes(task);
 
-                    if (totalRunCount >= maxConcurrentTotal) {
-                        return CauseOfBlockage.fromMessage(
-                                Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount));
-                    }
+                if (totalRunCount >= maxConcurrentTotal) {
+                    return CauseOfBlockage.fromMessage(
+                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount));
                 }
-            } else if (tjp.getThrottleOption().equals("category")) {
+            }
+
+            if (tjp.getThrottleOption().equals("category")) {
                 return throttleCheckForCategoriesAllNodes(jenkins, tjp.getCategories());
             }
         } else if (!pipelineCategories.isEmpty()) {
