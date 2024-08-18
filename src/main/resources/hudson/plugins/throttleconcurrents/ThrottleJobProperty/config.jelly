@@ -8,27 +8,28 @@
       <f:radio name="throttleOption" checked="${instance.throttleOption==null || instance.throttleOption=='project'}"
               title="${%Throttle this project alone}" value="project"/>
     </f:entry>
-    <f:entry title="${%Also throttle this project as part of one or more categories}">
+    <f:entry title="${%Also throttle this project as part of:}">
       <f:radio name="throttleOption" checked="${instance.throttleOption=='category'}"
-              title="${%Also throttle this project as part of one or more categories}" value="category"/>
+              title="${%One or more static categories}" value="category"/>
+      <f:radio name="throttleOption" checked="${instance.throttleOption=='dynamicCategory'}"
+              title="${%A dynamic category}" value="dynamicCategory"/>
     </f:entry>
 
-    <f:entry title="${%Maximum Total Concurrent Builds}"
+    <f:entry title="${%Project-level maximum Total Concurrent Builds}"
              field="maxConcurrentTotal">
       <f:textbox />
     </f:entry>
-    <f:entry title="${%Maximum Concurrent Builds Per Node}"
+    <f:entry title="${%Project-level maximum Concurrent Builds Per Node}"
              field="maxConcurrentPerNode">
       <f:textbox />
     </f:entry>
-  
   
     <f:optionalBlock field="limitOneJobWithMatchingParams"
                    title="${%Prevent multiple jobs with identical parameters from running concurrently}"
                    inline="true">
     <f:entry title="${%List of parameters to check separated by commas or whitespaces}"
              field="paramsToUseForLimit">
-    <f:textbox />
+      <f:textbox />
       </f:entry>
     </f:optionalBlock>
 
@@ -41,6 +42,20 @@
         </j:forEach>
       </f:entry>
     </j:if>
+
+    <f:entry title="${%Dynamic Throttle Category}" field="dynamicCategory">
+      <f:textbox />
+    </f:entry>
+
+    <f:entry title="${%Base configuration for Dynamic Category}" field="dynamicCategoryBasedOn">
+      <f:select>
+        <f:option value="">${%Project-level configuration}</f:option>
+        <j:forEach var="cat" items="${descriptor.categories}">
+          <f:option value="${cat.categoryName}" selected="${instance.dynamicCategoryBasedOn==cat.categoryName}">${cat.categoryName}</f:option>
+        </j:forEach>
+      </f:select>
+    </f:entry>
+
     <!--Specific options for Matrix projects-->
     <j:if test="${descriptor.isMatrixProject(it)}">
         <f:entry>

@@ -85,6 +85,9 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
      */
     private Long configVersion;
 
+    private String dynamicCategory;
+    private String dynamicCategoryBasedOn;
+
     @DataBoundConstructor
     public ThrottleJobProperty(
             Integer maxConcurrentPerNode,
@@ -94,7 +97,9 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
             String throttleOption,
             boolean limitOneJobWithMatchingParams,
             String paramsToUseForLimit,
-            @CheckForNull ThrottleMatrixProjectOptions matrixOptions) {
+            @CheckForNull ThrottleMatrixProjectOptions matrixOptions,
+            String dynamicCategory,
+            String dynamicCategoryBasedOn) {
         this.maxConcurrentPerNode = maxConcurrentPerNode;
         this.maxConcurrentTotal = maxConcurrentTotal;
         this.categories = categories == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(categories);
@@ -104,6 +109,8 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
         this.matrixOptions = matrixOptions;
         this.paramsToUseForLimit = paramsToUseForLimit;
         this.paramsToCompare = parseParamsToUseForLimit(this.paramsToUseForLimit);
+        this.dynamicCategory = dynamicCategory;
+        this.dynamicCategoryBasedOn = dynamicCategoryBasedOn;
     }
 
     /**
@@ -227,6 +234,22 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
         return paramsToCompare;
     }
 
+    public void setDynamicCategory(String dynamicCategory) {
+        this.dynamicCategory = dynamicCategory;
+    }
+
+    public String getDynamicCategory() {
+        return dynamicCategory;
+    }
+
+    public void setDynamicCategoryBasedOn(String dynamicCategoryBasedOn) {
+        this.dynamicCategoryBasedOn = dynamicCategoryBasedOn;
+    }
+
+    public String getDynamicCategoryBasedOn() {
+        return dynamicCategoryBasedOn;
+    }
+
     /**
      * Compute the parameters to use for the comparison when checking when another build with the
      * same parameters is running on a node.
@@ -293,7 +316,8 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
         }
         for (ThrottleJobProperty t : properties) {
             if (t.getThrottleEnabled()) {
-                if (t.getCategories() != null && t.getCategories().contains(category)) {
+                if (t.getCategories() != null && t.getCategories().contains(category) ||
+                    StringUtils.equalsIgnoreCase(t.getDynamicCategory(), category)) {
                     Job<?, ?> p = t.owner;
                     if (
                     /*is a task*/ p instanceof Queue.Task
@@ -489,6 +513,25 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
 
         @SuppressWarnings("lgtm[jenkins/csrf]")
         public ListBoxModel doFillCategoryItems(@AncestorInPath Item item) {
+            if (item != null) {
+                item.checkPermission(Item.CONFIGURE);
+            } else {
+                Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            }
+
+            ListBoxModel m = new ListBoxModel();
+
+            m.add("(none)", "");
+
+            for (ThrottleCategory tc : getCategories()) {
+                m.add(tc.getCategoryName());
+            }
+
+            return m;
+        }
+        
+        @SuppressWarnings("lgtm[jenkins/csrf]")
+        public ListBoxModel doFillDynamicCategoryBasedOnItems(@AncestorInPath Item item) {
             if (item != null) {
                 item.checkPermission(Item.CONFIGURE);
             } else {
