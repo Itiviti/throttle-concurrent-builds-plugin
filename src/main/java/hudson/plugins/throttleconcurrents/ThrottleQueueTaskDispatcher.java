@@ -91,7 +91,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                     // This would mean that there are as many or more builds currently running than are allowed.
                     if (runCount >= maxConcurrentPerNode) {
                         return CauseOfBlockage.fromMessage(
-                                Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount));
+                                Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount, "current job"));
                     }
                 }
 
@@ -147,7 +147,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                 // This would mean that there are as many or more builds currently running than are allowed.
                 if (runCount >= maxConcurrentPerNode) {
                     return CauseOfBlockage.fromMessage(
-                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount));
+                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount, "category " + category.getCategoryName()));
                 }
             }
         }
@@ -243,7 +243,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
 
                 if (totalRunCount >= maxConcurrentTotal) {
                     return CauseOfBlockage.fromMessage(
-                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount));
+                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount, "current job"));
                 }
             }
 
@@ -296,7 +296,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
 
                 if (totalRunCount >= maxConcurrentTotal) {
                     return CauseOfBlockage.fromMessage(
-                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount));
+                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount, "category " + category.getCategoryName()));
                 }
             }
         }
