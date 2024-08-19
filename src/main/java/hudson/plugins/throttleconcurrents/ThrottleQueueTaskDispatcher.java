@@ -39,6 +39,7 @@ import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution.Placeh
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,6 +97,13 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
 
                 if (tjp.getThrottleOption().equals("category")) {
                     return throttleCheckForCategoriesOnNode(node, jenkins, toThrottleCategories(tjp.getCategories()));
+                } else if (tjp.getThrottleOption().equals("dynamicCategory")) {
+                    return throttleCheckForCategoriesOnNode(
+                        node,
+                        jenkins,
+                        toThrottleCategories(Collections.singletonList(tjp.getDynamicCategory()), tjp.getDynamicCategoryBasedOn()));
+                } else {
+                    LOGGER.log(Level.WARNING, "Unknown throttle option {0}", tjp.getThrottleOption());
                 }
             } else if (!pipelineCategories.isEmpty()) {
                 return throttleCheckForCategoriesOnNode(node, jenkins, toThrottleCategories(pipelineCategories));
@@ -241,6 +249,12 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
 
             if (tjp.getThrottleOption().equals("category")) {
                 return throttleCheckForCategoriesAllNodes(jenkins, toThrottleCategories(tjp.getCategories()));
+            } else if (tjp.getThrottleOption().equals("dynamicCategory")) {
+                return throttleCheckForCategoriesAllNodes(
+                    jenkins,
+                    toThrottleCategories(Collections.singletonList(tjp.getDynamicCategory()), tjp.getDynamicCategoryBasedOn()));
+            } else {
+                LOGGER.log(Level.WARNING, "Unknown throttle option {0}", tjp.getThrottleOption());
             }
         } else if (!pipelineCategories.isEmpty()) {
             return throttleCheckForCategoriesAllNodes(jenkins, toThrottleCategories(pipelineCategories));
@@ -689,19 +703,20 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                 continue;
             }
 
-            ThrottleJobProperty.ThrottleCategory baseCategory = ThrottleJobProperty.fetchDescriptor()
-                .getCategoryByName(baseCategoryName != null ? baseCategoryName : categoryName);
+            ThrottleJobProperty.ThrottleCategory sourceCategory = ThrottleJobProperty.fetchDescriptor()
+                .getCategoryByName(
+                    StringUtils.isBlank(baseCategoryName) ? categoryName : baseCategoryName);
 
-            if (baseCategory == null) {
+            if (sourceCategory == null) {
                 LOGGER.log(Level.WARNING, "Category {0} not found", categoryName);
                 continue;
             }
 
             ThrottleJobProperty.ThrottleCategory category = new ThrottleJobProperty.ThrottleCategory(
-                baseCategory.getCategoryName(),
-                baseCategory.getMaxConcurrentPerNode(),
-                baseCategory.getMaxConcurrentTotal(),
-                baseCategory.getNodeLabeledPairs());
+                categoryName,
+                sourceCategory.getMaxConcurrentPerNode(),
+                sourceCategory.getMaxConcurrentTotal(),
+                sourceCategory.getNodeLabeledPairs());
             throttleCategories.add(category);
 
         }

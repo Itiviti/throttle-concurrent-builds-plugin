@@ -152,12 +152,18 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
     @Override
     protected void setOwner(Job<?, ?> owner) {
         super.setOwner(owner);
-        if (throttleEnabled && categories != null) {
+        if (throttleEnabled && (categories != null || dynamicCategory != null)) {
             DescriptorImpl descriptor = (DescriptorImpl) getDescriptor();
             synchronized (descriptor.propertiesByCategoryLock) {
                 for (String c : categories) {
                     Map<ThrottleJobProperty, Void> properties =
                             descriptor.propertiesByCategory.computeIfAbsent(c, k -> new WeakHashMap<>());
+                    properties.put(this, null);
+                }
+
+                if (dynamicCategory != null) {
+                    Map<ThrottleJobProperty, Void> properties =
+                            descriptor.propertiesByCategory.computeIfAbsent(dynamicCategory, k -> new WeakHashMap<>());
                     properties.put(this, null);
                 }
             }
