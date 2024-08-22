@@ -101,8 +101,8 @@ public class ThrottleJobPropertyTest {
     @Test
     @WithoutJenkins
     public void testToStringWithNulls() {
-        ThrottleJobProperty tjp =
-                new ThrottleJobProperty(0, 0, null, false, null, false, "", ThrottleMatrixProjectOptions.DEFAULT, null, null);
+        ThrottleJobProperty tjp = new ThrottleJobProperty(
+                0, 0, null, false, null, false, "", ThrottleMatrixProjectOptions.DEFAULT, null, null);
         assertNotNull(tjp.toString());
     }
 

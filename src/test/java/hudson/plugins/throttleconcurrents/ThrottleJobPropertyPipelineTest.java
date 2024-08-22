@@ -103,7 +103,8 @@ public class ThrottleJobPropertyPipelineTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1, "category " + TestUtil.ONE_PER_NODE.getCategoryName())
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(
+                                1, "category " + TestUtil.ONE_PER_NODE.getCategoryName())
                         .toString()));
         assertEquals(1, agent.toComputer().countBusy());
         TestUtil.hasPlaceholderTaskForRun(agent, firstJobFirstRun);
@@ -183,7 +184,8 @@ public class ThrottleJobPropertyPipelineTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(2, "category " + TestUtil.TWO_TOTAL.getCategoryName())
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(
+                                2, "category " + TestUtil.TWO_TOTAL.getCategoryName())
                         .toString()));
         assertEquals(1, firstAgent.toComputer().countBusy());
         TestUtil.hasPlaceholderTaskForRun(firstAgent, firstJobFirstRun);

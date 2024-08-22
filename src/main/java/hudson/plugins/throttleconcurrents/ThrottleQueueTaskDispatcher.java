@@ -24,6 +24,15 @@ import hudson.model.queue.WorkUnit;
 import hudson.plugins.throttleconcurrents.pipeline.ThrottleStep;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
@@ -36,16 +45,6 @@ import org.jenkinsci.plugins.workflow.graphanalysis.LinearBlockHoppingScanner;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.concurrent.Timeout;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution.PlaceholderTask;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Extension
 public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
@@ -99,9 +98,11 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                     return throttleCheckForCategoriesOnNode(node, jenkins, toThrottleCategories(tjp.getCategories()));
                 } else if (tjp.getThrottleOption().equals("dynamicCategory")) {
                     return throttleCheckForCategoriesOnNode(
-                        node,
-                        jenkins,
-                        toThrottleCategories(Collections.singletonList(tjp.getDynamicCategory()), tjp.getDynamicCategoryBasedOn()));
+                            node,
+                            jenkins,
+                            toThrottleCategories(
+                                    Collections.singletonList(tjp.getDynamicCategory()),
+                                    tjp.getDynamicCategoryBasedOn()));
                 } else {
                     LOGGER.log(Level.WARNING, "Unknown throttle option {0}", tjp.getThrottleOption());
                 }
@@ -113,19 +114,19 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
         return null;
     }
 
-    private CauseOfBlockage throttleCheckForCategoriesOnNode(Node node, Jenkins jenkins, List<ThrottleJobProperty.ThrottleCategory> categories) {
+    private CauseOfBlockage throttleCheckForCategoriesOnNode(
+            Node node, Jenkins jenkins, List<ThrottleJobProperty.ThrottleCategory> categories) {
         for (ThrottleJobProperty.ThrottleCategory category : categories) {
             List<Task> categoryTasks = ThrottleJobProperty.getCategoryTasks(category.getCategoryName());
 
             int runCount = 0;
             // Max concurrent per node for category
-            int maxConcurrentPerNode = getMaxConcurrentPerNodeBasedOnMatchingLabels(
-                    node, category, category.getMaxConcurrentPerNode());
+            int maxConcurrentPerNode =
+                    getMaxConcurrentPerNodeBasedOnMatchingLabels(node, category, category.getMaxConcurrentPerNode());
             if (maxConcurrentPerNode > 0) {
                 for (Task catTask : categoryTasks) {
                     if (jenkins.getQueue().isPending(catTask)) {
-                        return CauseOfBlockage.fromMessage(
-                                Messages._ThrottleQueueTaskDispatcher_BuildPending());
+                        return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_BuildPending());
                     }
                     runCount += buildsOfProjectOnNode(node, catTask);
                 }
@@ -133,8 +134,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                         ThrottleJobProperty.getThrottledPipelineRunsForCategory(category.getCategoryName());
                 for (Map.Entry<String, List<FlowNode>> entry : throttledPipelines.entrySet()) {
                     if (hasPendingPipelineForCategory(entry.getValue())) {
-                        return CauseOfBlockage.fromMessage(
-                                Messages._ThrottleQueueTaskDispatcher_BuildPending());
+                        return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_BuildPending());
                     }
                     Run<?, ?> r = Run.fromExternalizableId(entry.getKey());
                     if (r != null) {
@@ -146,8 +146,8 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                 }
                 // This would mean that there are as many or more builds currently running than are allowed.
                 if (runCount >= maxConcurrentPerNode) {
-                    return CauseOfBlockage.fromMessage(
-                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(runCount, "category " + category.getCategoryName()));
+                    return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(
+                            runCount, "category " + category.getCategoryName()));
                 }
             }
         }
@@ -251,8 +251,9 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                 return throttleCheckForCategoriesAllNodes(jenkins, toThrottleCategories(tjp.getCategories()));
             } else if (tjp.getThrottleOption().equals("dynamicCategory")) {
                 return throttleCheckForCategoriesAllNodes(
-                    jenkins,
-                    toThrottleCategories(Collections.singletonList(tjp.getDynamicCategory()), tjp.getDynamicCategoryBasedOn()));
+                        jenkins,
+                        toThrottleCategories(
+                                Collections.singletonList(tjp.getDynamicCategory()), tjp.getDynamicCategoryBasedOn()));
             } else {
                 LOGGER.log(Level.WARNING, "Unknown throttle option {0}", tjp.getThrottleOption());
             }
@@ -263,7 +264,8 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
         return null;
     }
 
-    private CauseOfBlockage throttleCheckForCategoriesAllNodes(Jenkins jenkins, @NonNull List<ThrottleJobProperty.ThrottleCategory> categories) {
+    private CauseOfBlockage throttleCheckForCategoriesAllNodes(
+            Jenkins jenkins, @NonNull List<ThrottleJobProperty.ThrottleCategory> categories) {
         for (ThrottleJobProperty.ThrottleCategory category : categories) {
             List<Task> categoryTasks = ThrottleJobProperty.getCategoryTasks(category.getCategoryName());
 
@@ -273,8 +275,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
 
                 for (Task catTask : categoryTasks) {
                     if (jenkins.getQueue().isPending(catTask)) {
-                        return CauseOfBlockage.fromMessage(
-                                Messages._ThrottleQueueTaskDispatcher_BuildPending());
+                        return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_BuildPending());
                     }
                     totalRunCount += buildsOfProjectOnAllNodes(catTask);
                 }
@@ -282,8 +283,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                         ThrottleJobProperty.getThrottledPipelineRunsForCategory(category.getCategoryName());
                 for (Map.Entry<String, List<FlowNode>> entry : throttledPipelines.entrySet()) {
                     if (hasPendingPipelineForCategory(entry.getValue())) {
-                        return CauseOfBlockage.fromMessage(
-                                Messages._ThrottleQueueTaskDispatcher_BuildPending());
+                        return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_BuildPending());
                     }
                     Run<?, ?> r = Run.fromExternalizableId(entry.getKey());
                     if (r != null) {
@@ -295,8 +295,8 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                 }
 
                 if (totalRunCount >= maxConcurrentTotal) {
-                    return CauseOfBlockage.fromMessage(
-                            Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(totalRunCount, "category " + category.getCategoryName()));
+                    return CauseOfBlockage.fromMessage(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(
+                            totalRunCount, "category " + category.getCategoryName()));
                 }
             }
         }
@@ -696,7 +696,8 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
         return toThrottleCategories(categoryNames, null);
     }
 
-    private List<ThrottleJobProperty.ThrottleCategory> toThrottleCategories(List<String> categoryNames, String baseCategoryName) {
+    private List<ThrottleJobProperty.ThrottleCategory> toThrottleCategories(
+            List<String> categoryNames, String baseCategoryName) {
         List<ThrottleJobProperty.ThrottleCategory> throttleCategories = new ArrayList<>();
         for (String categoryName : categoryNames) {
             if (StringUtils.isBlank(categoryName)) {
@@ -704,8 +705,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
             }
 
             ThrottleJobProperty.ThrottleCategory sourceCategory = ThrottleJobProperty.fetchDescriptor()
-                .getCategoryByName(
-                    StringUtils.isBlank(baseCategoryName) ? categoryName : baseCategoryName);
+                    .getCategoryByName(StringUtils.isBlank(baseCategoryName) ? categoryName : baseCategoryName);
 
             if (sourceCategory == null) {
                 LOGGER.log(Level.WARNING, "Category {0} not found", categoryName);
@@ -713,12 +713,11 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
             }
 
             ThrottleJobProperty.ThrottleCategory category = new ThrottleJobProperty.ThrottleCategory(
-                categoryName,
-                sourceCategory.getMaxConcurrentPerNode(),
-                sourceCategory.getMaxConcurrentTotal(),
-                sourceCategory.getNodeLabeledPairs());
+                    categoryName,
+                    sourceCategory.getMaxConcurrentPerNode(),
+                    sourceCategory.getMaxConcurrentTotal(),
+                    sourceCategory.getNodeLabeledPairs());
             throttleCategories.add(category);
-
         }
         return throttleCategories;
     }

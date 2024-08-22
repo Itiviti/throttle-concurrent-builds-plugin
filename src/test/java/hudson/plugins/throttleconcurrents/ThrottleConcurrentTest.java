@@ -341,8 +341,7 @@ public class ThrottleConcurrentTest
                     null,
                     null,
                     null,
-                    null
-                ));
+                    null));
             return freeStyleProject;
         }
 

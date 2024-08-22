@@ -322,8 +322,8 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
         }
         for (ThrottleJobProperty t : properties) {
             if (t.getThrottleEnabled()) {
-                if (t.getCategories() != null && t.getCategories().contains(category) ||
-                    StringUtils.equalsIgnoreCase(t.getDynamicCategory(), category)) {
+                if (t.getCategories() != null && t.getCategories().contains(category)
+                        || StringUtils.equalsIgnoreCase(t.getDynamicCategory(), category)) {
                     Job<?, ?> p = t.owner;
                     if (
                     /*is a task*/ p instanceof Queue.Task
@@ -535,7 +535,7 @@ public class ThrottleJobProperty extends JobProperty<Job<?, ?>> {
 
             return m;
         }
-        
+
         @SuppressWarnings("lgtm[jenkins/csrf]")
         public ListBoxModel doFillDynamicCategoryBasedOnItems(@AncestorInPath Item item) {
             if (item != null) {
