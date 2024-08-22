@@ -55,7 +55,9 @@ public class ThrottleJobPropertyTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY,
                 false,
                 "",
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         FreeStyleProject p3 = j.createFreeStyleProject("p3");
         p3.addProperty(new ThrottleJobProperty(
                 1,
@@ -65,7 +67,9 @@ public class ThrottleJobPropertyTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY,
                 false,
                 "",
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         FreeStyleProject p4 = j.createFreeStyleProject("p4");
         p4.addProperty(new ThrottleJobProperty(
                 1,
@@ -75,7 +79,9 @@ public class ThrottleJobPropertyTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY,
                 false,
                 "",
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         // TODO when core dep ≥1.480.3, add cloudbees-folder as a test dependency so we can check
         // jobs inside folders
         assertProjects(alpha, p3);
@@ -96,7 +102,7 @@ public class ThrottleJobPropertyTest {
     @WithoutJenkins
     public void testToStringWithNulls() {
         ThrottleJobProperty tjp =
-                new ThrottleJobProperty(0, 0, null, false, null, false, "", ThrottleMatrixProjectOptions.DEFAULT);
+                new ThrottleJobProperty(0, 0, null, false, null, false, "", ThrottleMatrixProjectOptions.DEFAULT, null, null);
         assertNotNull(tjp.toString());
     }
 
@@ -119,7 +125,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 expectedParamsToUseForLimit,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
 
         assertEquals(expectedMaxConcurrentPerNode, property.getMaxConcurrentPerNode());
         assertEquals(expectedMaxConcurrentTotal, property.getMaxConcurrentTotal());
@@ -159,7 +167,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit00,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit00, property00.getParamsToCompare());
 
         String assignedParamsToUseForLimit0 = "";
@@ -172,7 +182,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit0,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit0, property0.getParamsToCompare());
 
         String assignedParamsToUseForLimit0a = " ";
@@ -185,7 +197,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit0a,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit0a, property0a.getParamsToCompare());
 
         String assignedParamsToUseForLimit0b = " , ";
@@ -198,7 +212,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit0b,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit0b, property0b.getParamsToCompare());
 
         String assignedParamsToUseForLimit0c = " ,,,  \n";
@@ -211,7 +227,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit0c,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit0c, property0c.getParamsToCompare());
 
         // (1) One buildarg name listed in the input becomes the only one string in the list;
@@ -226,7 +244,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit1,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit1, property1.getParamsToCompare());
 
         String assignedParamsToUseForLimit1a = " ONE_PARAM";
@@ -239,7 +259,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit1a,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit1a, property1a.getParamsToCompare());
 
         String assignedParamsToUseForLimit1b = " ONE_PARAM\n";
@@ -252,7 +274,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit1b,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit1b, property1b.getParamsToCompare());
 
         // (2) Two buildarg names listed in the input become two strings in the list.
@@ -266,7 +290,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit2,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit2, property2.getParamsToCompare());
 
         // (3) Different separators are handled the same.
@@ -280,7 +306,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit3,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit3, property3.getParamsToCompare());
 
         // (4) Several separating tokens together must go away as one: we want no empties in the
@@ -295,7 +323,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit4,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit4, property4.getParamsToCompare());
 
         // (5) Java does not really have multilines, but still... note that if any whitespace should
@@ -311,7 +341,9 @@ public class ThrottleJobPropertyTest {
                 expectedThrottleOption,
                 expectedLimitOneJobWithMatchingParams,
                 assignedParamsToUseForLimit5,
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
         assertEquals(expectedParamsToUseForLimit5, property5.getParamsToCompare());
     }
 
@@ -331,7 +363,9 @@ public class ThrottleJobPropertyTest {
                 "throttle_option",
                 anyBoolean(),
                 anyString(),
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
 
         List<String> storedCategories = property.getCategories();
         assertEquals("contents of original and stored list should be the equal", unsafeList, storedCategories);
@@ -353,7 +387,9 @@ public class ThrottleJobPropertyTest {
                 "throttle_option",
                 anyBoolean(),
                 anyString(),
-                ThrottleMatrixProjectOptions.DEFAULT);
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null);
 
         assertEquals(Collections.emptyList(), property.getCategories());
     }

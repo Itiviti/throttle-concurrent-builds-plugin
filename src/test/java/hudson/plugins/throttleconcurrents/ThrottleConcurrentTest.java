@@ -339,7 +339,10 @@ public class ThrottleConcurrentTest
                     TestUtil.THROTTLE_OPTION_CATEGORY,
                     false,
                     null,
-                    null));
+                    null,
+                    null,
+                    null
+                ));
             return freeStyleProject;
         }
 

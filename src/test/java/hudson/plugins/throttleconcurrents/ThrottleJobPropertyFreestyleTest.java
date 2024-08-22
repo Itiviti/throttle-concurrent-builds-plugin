@@ -139,7 +139,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         SequenceLock firstJobSeq = new SequenceLock();
         firstJob.getBuildersList().add(new SequenceLockBuilder(firstJobSeq));
 
@@ -156,7 +158,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         SequenceLock secondJobSeq = new SequenceLock();
         secondJob.getBuildersList().add(new SequenceLockBuilder(secondJobSeq));
 
@@ -170,7 +174,7 @@ public class ThrottleJobPropertyFreestyleTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1, "category " + TestUtil.ONE_PER_NODE.getCategoryName())
                         .toString()));
         assertEquals(1, agent.toComputer().countBusy());
 
@@ -202,7 +206,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         SequenceLock firstJobSeq = new SequenceLock();
         firstJob.getBuildersList().add(new SequenceLockBuilder(firstJobSeq));
 
@@ -219,7 +225,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         SequenceLock secondJobSeq = new SequenceLock();
         secondJob.getBuildersList().add(new SequenceLockBuilder(secondJobSeq));
 
@@ -236,7 +244,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         SequenceLock thirdJobSeq = new SequenceLock();
         thirdJob.getBuildersList().add(new SequenceLockBuilder(thirdJobSeq));
 
@@ -250,7 +260,7 @@ public class ThrottleJobPropertyFreestyleTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(2)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(2, "category " + TestUtil.TWO_TOTAL.getCategoryName())
                         .toString()));
         assertEquals(1, firstAgent.toComputer().countBusy());
 
@@ -292,7 +302,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_PROJECT, // throttleOption
                 true,
                 "FOO,BAR",
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         SequenceLock firstRunSeq = new SequenceLock();
         SequenceLock secondRunSeq = new SequenceLock();
         project.getBuildersList().add(new SequenceLockBuilder(firstRunSeq, secondRunSeq));
@@ -344,7 +356,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false, // limitOneJobWithMatchingParams
                 null, // paramsToUse for the previous flag
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         p1.getBuildersList().add(new SequenceLockBuilder(seq1));
 
         Folder f2 = j.createProject(Folder.class, "folder2");
@@ -359,7 +373,9 @@ public class ThrottleJobPropertyFreestyleTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false, // limitOneJobWithMatchingParams
                 null, // paramsToUse for the previous flag
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         p2.getBuildersList().add(new SequenceLockBuilder(seq2));
 
         FreeStyleBuild b1 = p1.scheduleBuild2(0).waitForStart();
@@ -375,7 +391,7 @@ public class ThrottleJobPropertyFreestyleTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1, "category " + TestUtil.ONE_PER_NODE.getCategoryName())
                         .toString()));
         assertEquals(1, agent.toComputer().countBusy());
 

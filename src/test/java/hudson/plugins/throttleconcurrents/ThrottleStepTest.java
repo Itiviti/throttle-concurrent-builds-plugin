@@ -93,7 +93,7 @@ public class ThrottleStepTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1,"category " + TestUtil.ONE_PER_NODE.getCategoryName())
                         .toString()));
         assertEquals(1, agent.toComputer().countBusy());
         TestUtil.hasPlaceholderTaskForRun(agent, firstJobFirstRun);
@@ -339,7 +339,9 @@ public class ThrottleStepTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
         freeStyleProject.setAssignedLabel(Label.get(agent.getNodeName()));
         freeStyleProject.getBuildersList().add(new TestBuilder() {
             @Override
@@ -423,7 +425,7 @@ public class ThrottleStepTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1, "category " + TestUtil.ONE_PER_NODE.getCategoryName())
                         .toString()));
         assertEquals(1, agent.toComputer().countBusy());
         TestUtil.hasPlaceholderTaskForRun(agent, firstJobFirstRun);

@@ -70,7 +70,9 @@ public class ThrottleJobPropertyPipelineTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
 
         WorkflowRun firstJobFirstRun = firstJob.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-first-job/1", firstJobFirstRun);
@@ -85,7 +87,9 @@ public class ThrottleJobPropertyPipelineTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
 
         WorkflowRun secondJobFirstRun = secondJob.scheduleBuild2(0).waitForStart();
         j.waitForMessage("Still waiting to schedule task", secondJobFirstRun);
@@ -99,7 +103,7 @@ public class ThrottleJobPropertyPipelineTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityOnNode(1, "category " + TestUtil.ONE_PER_NODE.getCategoryName())
                         .toString()));
         assertEquals(1, agent.toComputer().countBusy());
         TestUtil.hasPlaceholderTaskForRun(agent, firstJobFirstRun);
@@ -131,7 +135,9 @@ public class ThrottleJobPropertyPipelineTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
 
         WorkflowRun firstJobFirstRun = firstJob.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-first-job/1", firstJobFirstRun);
@@ -146,7 +152,9 @@ public class ThrottleJobPropertyPipelineTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
 
         WorkflowRun secondJobFirstRun = secondJob.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-second-job/1", secondJobFirstRun);
@@ -161,7 +169,9 @@ public class ThrottleJobPropertyPipelineTest {
                 TestUtil.THROTTLE_OPTION_CATEGORY, // throttleOption
                 false,
                 null,
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
 
         QueueTaskFuture<WorkflowRun> thirdJobFirstRunFuture = thirdJob.scheduleBuild2(0);
         j.jenkins.getQueue().maintain();
@@ -173,7 +183,7 @@ public class ThrottleJobPropertyPipelineTest {
         Set<String> blockageReasons = TestUtil.getBlockageReasons(queuedItem.getCauseOfBlockage());
         assertThat(
                 blockageReasons,
-                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(2)
+                hasItem(Messages._ThrottleQueueTaskDispatcher_MaxCapacityTotal(2, "category " + TestUtil.TWO_TOTAL.getCategoryName())
                         .toString()));
         assertEquals(1, firstAgent.toComputer().countBusy());
         TestUtil.hasPlaceholderTaskForRun(firstAgent, firstJobFirstRun);
@@ -219,7 +229,9 @@ public class ThrottleJobPropertyPipelineTest {
                 TestUtil.THROTTLE_OPTION_PROJECT, // throttleOption
                 true,
                 "FOO,BAR",
-                ThrottleMatrixProjectOptions.DEFAULT));
+                ThrottleMatrixProjectOptions.DEFAULT,
+                null,
+                null));
 
         WorkflowRun firstRun = project.scheduleBuild2(0).waitForStart();
         SemaphoreStep.waitForStart("wait-" + project.getName() + "-job/1", firstRun);
