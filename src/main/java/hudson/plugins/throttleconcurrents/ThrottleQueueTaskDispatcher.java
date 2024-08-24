@@ -103,7 +103,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                             toThrottleCategories(
                                     Collections.singletonList(tjp.getDynamicCategory()),
                                     tjp.getDynamicCategoryBasedOn()));
-                } else {
+                } else if (!tjp.getThrottleOption().equals("project")) {
                     LOGGER.log(Level.WARNING, "Unknown throttle option {0}", tjp.getThrottleOption());
                 }
             } else if (!pipelineCategories.isEmpty()) {
@@ -254,7 +254,7 @@ public class ThrottleQueueTaskDispatcher extends QueueTaskDispatcher {
                         jenkins,
                         toThrottleCategories(
                                 Collections.singletonList(tjp.getDynamicCategory()), tjp.getDynamicCategoryBasedOn()));
-            } else {
+            } else if (!tjp.getThrottleOption().equals("project")) {
                 LOGGER.log(Level.WARNING, "Unknown throttle option {0}", tjp.getThrottleOption());
             }
         } else if (!pipelineCategories.isEmpty()) {
